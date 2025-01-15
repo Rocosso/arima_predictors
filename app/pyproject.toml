@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "venv"
+version = "0.1.0"
+description = ""
+authors = ["Betoso <lachavezca@unal.edu.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.6"
+pandas = "^2.2.3"
+numpy = "^2.2.1"
+statsmodels = "^0.14.4"
+scikit-learn = "^1.6.1"
+gdown = "^5.2.0"
+uvicorn = "^0.34.0"
+dependency-injector = "^4.45.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+package-mode = false
