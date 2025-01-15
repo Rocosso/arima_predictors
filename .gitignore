@@ -11,3 +11,6 @@ test_venv
 # datasets
 *.csv
 
+# pycache
+__pycache__
+
