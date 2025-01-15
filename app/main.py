@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from app.routers.arima_router import router as arima_router
-from app.routers.health_check import appHealthCheck as HealthCheckRouter
+from routers.arima_router import arima_router
+from routers.health_check import appHealthCheck as HealthCheckRouter
 
 # Crear la aplicación FastAPI
 app = FastAPI()

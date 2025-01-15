@@ -3,7 +3,7 @@ import os
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
-from src.settings.logging_config import setup_logger
+from settings.logger import setup_logger
 
 
 logger = setup_logger()

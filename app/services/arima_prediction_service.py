@@ -1,4 +1,4 @@
-from app.repositories.model_prediction_repository import PredictionRepository
+from repositories.model_prediction_repository import PredictionRepository
 
 class ArimaPredictionService:
     def __init__(self, repository: PredictionRepository):
