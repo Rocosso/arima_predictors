@@ -6,8 +6,8 @@ import numpy as np
 import gdown
 from statsmodels.tsa.arima.model import ARIMA
 
-from app.settings.config import Settings
-from app.settings.logger import setup_logger
+from settings.config import Settings
+from settings.logger import setup_logger
 
 log = setup_logger()
 settings = Settings()

@@ -1,11 +1,9 @@
-from itertools import product
-
 from fastapi import APIRouter, Depends, HTTPException
-from dependency_injector.wiring import inject
+from dependency_injector.wiring import inject, Provide
 
-from app.services.arima_prediction_service import ArimaPredictionService
-from app.containers.arima_container import get_prediction_service
-from app.use_cases.train_arima_model_use_case import TrainARIMAUseCase
+from services.arima_prediction_service import ArimaPredictionService
+from containers.arima_container import ArimaContainer  # Importa el contenedor
+from use_cases.train_arima_model_use_case import TrainARIMAUseCase
 
 # Crear el router específico para ARIMA
 arima_router = APIRouter()
@@ -13,7 +11,7 @@ arima_router = APIRouter()
 @inject
 @arima_router.post("/predict/")
 async def predict(steps: int,
-                  service: ArimaPredictionService = Depends(get_prediction_service),
+                  service: ArimaPredictionService = Depends(Provide[ArimaContainer.arima_service]),  # Cambiar a Provide
                   product_id: int = 1,
                   store_id: int = 1
                   ):
@@ -31,7 +29,7 @@ async def predict(steps: int,
              tags=["train"],
              summary="endpoint para Entrenar el modelo ARIMA",)
 async def train(steps: int,
-                use_case: TrainARIMAUseCase = Depends(),
+                use_case: TrainARIMAUseCase = Depends(Provide[ArimaContainer.train_arima_use_case]),  # Cambiar a Provide
                 product_id: int = 1,
                 store_id: int = 1
                 ):
@@ -44,4 +42,3 @@ async def train(steps: int,
         return {"forecast": result}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-

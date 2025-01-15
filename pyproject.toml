@@ -15,6 +15,7 @@ scikit-learn = "^1.6.1"
 gdown = "^5.2.0"
 uvicorn = "^0.34.0"
 dependency-injector = "^4.45.0"
+pydantic-settings = "^2.7.1"
 
 
 [build-system]

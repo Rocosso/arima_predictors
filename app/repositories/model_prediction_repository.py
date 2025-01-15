@@ -1,4 +1,4 @@
-from app.models.prediction_model import PredictionModel
+from models.prediction_model import PredictionModel
 
 class PredictionRepository:
     def __init__(self, model: PredictionModel):

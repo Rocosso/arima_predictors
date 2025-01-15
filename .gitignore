@@ -14,3 +14,9 @@ test_venv
 # pycache
 __pycache__
 
+# comprimidos
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar*
+
