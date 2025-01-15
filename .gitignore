@@ -1,0 +1,13 @@
+# archivos de configuracion de IDE
+.idea
+.vscode
+
+# entornos virtuales
+app/venv
+venv
+.venv
+test_venv
+
+# datasets
+*.csv
+

@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .  # Ubicación del Dockerfile
+      dockerfile: Dockerfile
+    container_name: arima-api
+    ports:
+      - "8000:8000"  # Exponer el puerto 8000
+    environment:
+      MODEL_PATH: ${ARIMA_MODELS_BUCKET_S3}  # Variable de entorno para el modelo
+    volumes:
+      - ./app:/app  # Montar la carpeta 'app' para acceso local
+    command: uvicorn app:app --host 0.0.0.0 --port 8000
