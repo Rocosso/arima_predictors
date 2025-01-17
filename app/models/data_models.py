@@ -137,3 +137,52 @@ class ModelResponse(BaseModel):
             }
         }
 
+class DateRange(BaseModel):
+    start_date: str = Field(
+        ...,
+        description="Fecha inicial en formato YYYY-MM-DD",
+        example="2024-01-01"
+    )
+    end_date: str = Field(
+        ...,
+        description="Fecha final en formato YYYY-MM-DD",
+        example="2024-01-31"
+    )
+    store_id: Optional[str] = Field(
+        None,
+        description="ID de la tienda (opcional)",
+        example="14bce06b5959"
+    )
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "start_date": "2024-01-01",
+                "end_date": "2024-01-31",
+                "store_id": "14bce06b5959"
+            }
+        }
+
+class TopProductResponse(BaseModel):
+    product_id: str = Field(..., description="ID del producto más vendido")
+    total_quantity: int = Field(..., description="Cantidad total vendida")
+    average_price: float = Field(..., description="Precio promedio")
+    total_sales: float = Field(..., description="Ventas totales")
+    store_id: Optional[str] = Field(None, description="ID de la tienda si se especificó")
+    period: Dict[str, str] = Field(..., description="Período analizado")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "product_id": "16a562fb5931",
+                "total_quantity": 1500,
+                "average_price": 10.99,
+                "total_sales": 16485.0,
+                "store_id": "14bce06b5959",
+                "period": {
+                    "start_date": "2024-01-01",
+                    "end_date": "2024-01-31"
+                }
+            }
+        }
+        

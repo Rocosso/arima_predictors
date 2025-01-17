@@ -1,9 +1,10 @@
 from repositories.model_prediction_repository import PredictionRepository
 from services.arima_prediction_service import ArimaPredictionService
 from services.data_preparation_service import DataPreparationService
+from services.top_product_service import TopProductService
 from use_cases.train_arima_model_use_case import TrainARIMAUseCase
-from dependency_injector import containers, providers
 
+from dependency_injector import containers, providers
 
 
 class ArimaContainer(containers.DeclarativeContainer):
@@ -11,14 +12,19 @@ class ArimaContainer(containers.DeclarativeContainer):
 
     config = providers.Configuration()
 
+    # Repository
+    repository = providers.Factory(
+        PredictionRepository
+    )
+
     # Services
     data_preparation_service = providers.Singleton(
         DataPreparationService
     )
 
-    # Repository
-    repository = providers.Factory(
-        PredictionRepository
+    top_product_service = providers.Factory(
+        TopProductService,
+        repository=repository
     )
 
     # Services
