@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from dependency_injector.wiring import inject, Provide
 
 from services.arima_prediction_service import ArimaPredictionService
+from services.top_product_service import TopProductService
 from containers.arima_container import ArimaContainer
 from use_cases.train_arima_model_use_case import TrainARIMAUseCase
-from models.data_models import TrainRequest, PredictRequest, ModelResponse
+from models.data_models import TrainRequest, PredictRequest, ModelResponse, DateRange, TopProductResponse
+
 
 arima_router = APIRouter(prefix="/arima", tags=["ARIMA Model"])
 
@@ -67,5 +69,28 @@ async def train(
             message=f"Model trained successfully for product {request.product_id} in store {request.store_id}",
             data=result
         )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@arima_router.post(
+    "/top-product",
+    response_model=TopProductResponse,
+    summary="Encontrar el producto más vendido en un rango de fechas"
+)
+@inject
+async def get_top_product(
+        request: DateRange,
+        service: TopProductService = Depends(Provide[ArimaContainer.top_product_service])
+) -> TopProductResponse:
+    try:
+        result = await service.get_top_product(
+            start_date=request.start_date,
+            end_date=request.end_date,
+            store_id=request.store_id
+        )
+
+        return TopProductResponse(**result)
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
