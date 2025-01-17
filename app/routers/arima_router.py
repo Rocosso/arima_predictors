@@ -2,43 +2,70 @@ from fastapi import APIRouter, Depends, HTTPException
 from dependency_injector.wiring import inject, Provide
 
 from services.arima_prediction_service import ArimaPredictionService
-from containers.arima_container import ArimaContainer  # Importa el contenedor
+from containers.arima_container import ArimaContainer
 from use_cases.train_arima_model_use_case import TrainARIMAUseCase
+from models.data_models import TrainRequest, PredictRequest, ModelResponse
 
-# Crear el router específico para ARIMA
-arima_router = APIRouter()
+arima_router = APIRouter(prefix="/arima", tags=["ARIMA Model"])
 
+
+@arima_router.post(
+    "/predict",
+    response_model=ModelResponse,
+    summary="Generar predicciones para un producto específico en una tienda"
+)
 @inject
-@arima_router.post("/predict/")
-async def predict(steps: int,
-                  service: ArimaPredictionService = Depends(Provide[ArimaContainer.arima_service]),  # Cambiar a Provide
-                  product_id: int = 1,
-                  store_id: int = 1
-                  ):
-    """
-    Endpoint para predecir valores utilizando el modelo ARIMA.
-    """
+async def predict(
+    request: PredictRequest,
+    service: ArimaPredictionService = Depends(Provide[ArimaContainer.arima_service])
+) -> ModelResponse:
     try:
-        result = await service.predict(steps=steps, product_id=product_id, store_id=store_id)
-        return {"forecast": result}
-    except ValueError as e:
+        # Convertir future_prices a pd.Series si se proporcionan
+        future_prices = None
+        if request.future_prices:
+            future_prices = pd.Series(
+                request.future_prices,
+                index=pd.date_range(start=pd.Timestamp.now(), periods=request.steps, freq='D')
+            )
+
+        result = await service.predict(
+            steps=request.steps,
+            product_id=request.product_id,
+            store_id=request.store_id,
+            future_prices=future_prices
+        )
+
+        return ModelResponse(
+            status="success",
+            message=f"Predictions generated for product {request.product_id} in store {request.store_id}",
+            data=result
+        )
+    except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@inject
-@arima_router.post("/train/",
-             tags=["train"],
-             summary="endpoint para Entrenar el modelo ARIMA",)
-async def train(steps: int,
-                use_case: TrainARIMAUseCase = Depends(Provide[ArimaContainer.train_arima_use_case]),  # Cambiar a Provide
-                product_id: int = 1,
-                store_id: int = 1
-                ):
-    """
-    Endpoint para entrenar el modelo ARIMA.
-    """
-    try:
-        result = use_case.execute(product_id=product_id, store_id=store_id)
 
-        return {"forecast": result}
-    except ValueError as e:
+
+@arima_router.post(
+    "/train",
+    response_model=ModelResponse,
+    summary="Entrenar modelo para un producto específico en una tienda"
+)
+@inject
+async def train(
+        request: TrainRequest,
+        use_case: TrainARIMAUseCase = Depends(Provide[ArimaContainer.train_arima_use_case])
+) -> ModelResponse:
+    try:
+        result = await use_case.execute(
+            product_id=request.product_id,
+            store_id=request.store_id,
+            parameters=request.parameters
+        )
+
+        return ModelResponse(
+            status="success",
+            message=f"Model trained successfully for product {request.product_id} in store {request.store_id}",
+            data=result
+        )
+    except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

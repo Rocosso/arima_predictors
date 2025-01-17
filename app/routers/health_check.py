@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
 
-appHealthCheck = APIRouter()
+health_check_router = APIRouter()
 
 
-@appHealthCheck.get("/health_check")
+@health_check_router.get("/health_check")
 def healt_check():
     """
     Ruta principal para verificar el estado de la API.

@@ -1,11 +1,20 @@
 from fastapi import FastAPI
-
-from routers.arima_router import arima_router
-from routers.health_check import appHealthCheck as HealthCheckRouter
+from routers import arima_router, health_check
+from containers.arima_container import ArimaContainer
 
 # Crear la aplicación FastAPI
 app = FastAPI()
 
-# Registrar los routers
-app.include_router(arima_router, prefix="/arima", tags=["ARIMA"])
-app.include_router(HealthCheckRouter, prefix="/health_check", tags=["Health Check"])
+# Configurar el contenedor
+container = ArimaContainer()
+
+# Incluir los routers
+app.include_router(health_check.health_check_router)
+app.include_router(arima_router.arima_router)
+
+# Configurar el contenedor
+@app.on_event("startup")
+async def startup_event():
+    container.wire(modules=[
+        "routers.arima_router"
+    ])
